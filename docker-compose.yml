@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ampera
+      POSTGRES_PASSWORD: ampera
+      POSTGRES_DB: ampera
+    ports:
+      - "5432:5432"
+    volumes:
+      - ampera-pg:/var/lib/postgresql/data
+volumes:
+  ampera-pg:
