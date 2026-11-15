@@ -52,6 +52,7 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test)
 
     reports {
+        // O HTML permite navegar por pacote, classe e método; XML/CSV servem às evidências.
         xml.required.set(true)
         html.required.set(true)
         csv.required.set(true)
