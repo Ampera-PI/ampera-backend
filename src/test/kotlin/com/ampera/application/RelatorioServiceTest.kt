@@ -175,7 +175,9 @@ class RelatorioServiceTest {
     fun `falha ao consultar medicoes e propagada sem salvar`() {
         val falha = IllegalStateException("consulta indisponível")
         `when`(medicoes.doPeriodo(2, de, ate)).thenThrow(falha)
-        assertSame(falha, assertThrows(IllegalStateException::class.java) { runBlocking { service.gerar(pedido) } })
+        // A recuperação de stack trace das corrotinas pode copiar a exceção.
+        val recebida = assertThrows(IllegalStateException::class.java) { runBlocking { service.gerar(pedido) } }
+        assertEquals(falha.message, recebida.message)
         verifyNoInteractions(tarifas, relatorios)
         verify(tx).rollback(any())
     }
@@ -184,7 +186,8 @@ class RelatorioServiceTest {
     fun `falha ao salvar e propagada e nao confirma transacao`() {
         val falha = IllegalStateException("persistência indisponível")
         `when`(relatorios.save(any(Relatorio::class.java))).thenThrow(falha)
-        assertSame(falha, assertThrows(IllegalStateException::class.java) { runBlocking { service.gerar(pedido) } })
+        val recebida = assertThrows(IllegalStateException::class.java) { runBlocking { service.gerar(pedido) } }
+        assertEquals(falha.message, recebida.message)
         verify(tx).rollback(any())
         verify(tx, never()).commit(any())
     }

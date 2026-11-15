@@ -95,7 +95,9 @@ class MedicaoServiceTest {
     fun `falha de persistencia e propagada sem avaliar alertas`() {
         val falha = IllegalStateException("indisponivel")
         `when`(medicoes.save(any(Medicao::class.java))).thenThrow(falha)
-        assertSame(falha, assertThrows(IllegalStateException::class.java) { runBlocking { service.criar(pedido) } })
+        // A recuperação de stack trace das corrotinas pode copiar a exceção.
+        val recebida = assertThrows(IllegalStateException::class.java) { runBlocking { service.criar(pedido) } }
+        assertEquals(falha.message, recebida.message)
         verifyNoInteractions(alertas)
         verify(tx).rollback(any())
     }
