@@ -26,6 +26,22 @@ jobs:
       - name: Executar testes e gerar cobertura JaCoCo
         run: bash ./gradlew clean test jacocoTestReport
 
+      - name: Resumir resultados e cobertura por classe e método
+        if: always()
+        run: python3 scripts/resumir-testes.py
+
+      - name: Salvar evidências em XML e resumo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencias-testes
+          path: |
+            build/reports/evidencias-testes.md
+            build/test-results/test/TEST-*.xml
+            build/reports/jacoco/test/jacocoTestReport.xml
+            build/reports/jacoco/test/jacocoTestReport.csv
+          if-no-files-found: warn
+
       - name: Salvar relatório dos testes JUnit
         if: always()
         uses: actions/upload-artifact@v4
