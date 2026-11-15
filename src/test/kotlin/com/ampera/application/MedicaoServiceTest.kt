@@ -48,7 +48,7 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `criar calcula custo pela primeira tarifa vigente e avalia alertas`() = runBlocking {
+    fun `criar calcula custo pela primeira tarifa vigente e avalia alertas`(): Unit = runBlocking {
         val alto = Alerta(grandeza = Grandeza.POTENCIA, limiar = 200.0)
         val normal = Alerta(grandeza = Grandeza.TENSAO, limiar = 127.0, disparado = true)
         `when`(tarifas.vigentes(2, LocalDate.now(ZoneOffset.UTC))).thenReturn(listOf(
@@ -71,7 +71,7 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `sem tarifa usa valor unitario mesmo apos reinicio do contador`() = runBlocking {
+    fun `sem tarifa usa valor unitario mesmo apos reinicio do contador`(): Unit = runBlocking {
         `when`(medicoes.findTopByDispositivoIdOrderByInstanteDesc(3)).thenReturn(Medicao(id = 9, energiaKwh = 8.0))
         assertEquals(BigDecimal("2.5000"), service.criar(pedido).custo)
     }
@@ -101,7 +101,7 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `buscar devolve medicao do dono`() = runBlocking {
+    fun `buscar devolve medicao do dono`(): Unit = runBlocking {
         `when`(medicoes.findById(4)).thenReturn(Optional.of(Medicao(id = 4, dispositivo = dispositivo)))
         assertEquals(4L, service.buscar(4).id)
         verify(dispositivos).findById(3)
@@ -117,7 +117,7 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `atualizar preserva identidade e recalcula custo`() = runBlocking {
+    fun `atualizar preserva identidade e recalcula custo`(): Unit = runBlocking {
         val existente = Medicao(id = 4, dispositivo = dispositivo, energiaKwh = 9.0)
         `when`(medicoes.findById(4)).thenReturn(Optional.of(existente))
         `when`(medicoes.findTopByDispositivoIdOrderByInstanteDesc(3)).thenReturn(existente)
@@ -129,7 +129,7 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `excluir verifica posse antes de remover`() = runBlocking {
+    fun `excluir verifica posse antes de remover`(): Unit = runBlocking {
         `when`(medicoes.findById(4)).thenReturn(Optional.of(Medicao(id = 4, dispositivo = dispositivo)))
         service.excluir(4)
         val ordem = inOrder(dispositivos, medicoes)
@@ -149,7 +149,7 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `recentes sem filtro limita pagina ao minimo`() = runBlocking {
+    fun `recentes sem filtro limita pagina ao minimo`(): Unit = runBlocking {
         val pagina = PageRequest.of(0, 1)
         `when`(medicoes.findByDispositivoComodoResidenciaUsuarioIdOrderByInstanteDesc(7, pagina))
             .thenReturn(listOf(Medicao(id = 4, dispositivo = dispositivo)))
@@ -158,14 +158,14 @@ class MedicaoServiceTest {
     }
 
     @Test
-    fun `recentes por dispositivo limita pagina ao maximo e ignora busca branca`() = runBlocking {
+    fun `recentes por dispositivo limita pagina ao maximo e ignora busca branca`(): Unit = runBlocking {
         assertTrue(service.recentes(3, 999, " ").toList().isEmpty())
         verify(medicoes).findByDispositivoIdOrderByInstanteDesc(3, PageRequest.of(0, 200))
         verify(dispositivos).findById(3)
     }
 
     @Test
-    fun `busca textual remove espacos e filtra dispositivo`() = runBlocking {
+    fun `busca textual remove espacos e filtra dispositivo`(): Unit = runBlocking {
         `when`(medicoes.buscarPorObservacao(7, "leitura", PageRequest.of(0, 10))).thenReturn(listOf(
             Medicao(id = 4, dispositivo = dispositivo), Medicao(id = 5, dispositivo = Dispositivo(id = 99)),
         ))
