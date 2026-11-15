@@ -1,0 +1,31 @@
+name: Testes Ampéra
+
+on:
+  workflow_dispatch:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Permitir execução do Gradle
+        run: chmod +x gradlew
+
+      - name: Executar testes
+        run: ./gradlew clean test
+
+      - name: Salvar relatório dos testes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-testes
+          path: build/reports/tests/test/
