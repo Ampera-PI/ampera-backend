@@ -1,3 +1,4 @@
+
 name: Testes Ampéra
 
 on:
@@ -17,8 +18,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Permitir execução do Gradle
-        run: chmod +x gradlew
+      - name: Corrigir quebras de linha do Gradle
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
 
       - name: Executar testes
         run: ./gradlew clean test
@@ -29,3 +32,4 @@ jobs:
         with:
           name: relatorio-testes
           path: build/reports/tests/test/
+          if-no-files-found: warn
