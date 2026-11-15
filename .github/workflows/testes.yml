@@ -23,13 +23,21 @@ jobs:
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
-      - name: Executar testes
-        run: bash ./gradlew clean test
+      - name: Executar testes e gerar cobertura JaCoCo
+        run: bash ./gradlew clean test jacocoTestReport
 
-      - name: Salvar relatório dos testes
+      - name: Salvar relatório dos testes JUnit
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: relatorio-testes
           path: build/reports/tests/test/
+          if-no-files-found: warn
+
+      - name: Salvar relatório de cobertura JaCoCo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-jacoco
+          path: build/reports/jacoco/test/html/
           if-no-files-found: warn
