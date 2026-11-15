@@ -18,13 +18,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Corrigir quebras de linha do Gradle
+      - name: Corrigir Gradle
         run: |
           sed -i 's/\r$//' gradlew
           chmod +x gradlew
 
       - name: Executar testes
-        run: ./gradlew clean test
+        run: bash ./gradlew clean test
 
       - name: Salvar relatório dos testes
         if: always()
